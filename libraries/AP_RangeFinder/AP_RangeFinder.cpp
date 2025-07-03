@@ -36,6 +36,7 @@
 #include "AP_RangeFinder_TeraRanger_Serial.h"
 #include "AP_RangeFinder_VL53L0X.h"
 #include "AP_RangeFinder_VL53L1X.h"
+#include "AP_RangeFinder_VL53L4CX.h"
 #include "AP_RangeFinder_NMEA.h"
 #include "AP_RangeFinder_Wasp.h"
 #include "AP_RangeFinder_Benewake_TF02.h"
@@ -360,6 +361,7 @@ __INITFUNC__ void RangeFinder::detect_instance(uint8_t instance, uint8_t& serial
 #endif
     case Type::VL53L0X:
     case Type::VL53L1X_Short:
+    case Type::VL53L4CX:
             FOREACH_I2C(i) {
 #if AP_RANGEFINDER_VL53L0X_ENABLED
                 if (_add_backend(AP_RangeFinder_VL53L0X::detect(state[instance], params[instance],
@@ -373,6 +375,14 @@ __INITFUNC__ void RangeFinder::detect_instance(uint8_t instance, uint8_t& serial
                                                                 hal.i2c_mgr->get_device(i, params[instance].address),
                                                                 _type == Type::VL53L1X_Short ?  AP_RangeFinder_VL53L1X::DistanceMode::Short :
                                                                 AP_RangeFinder_VL53L1X::DistanceMode::Long),
+                                 instance)) {
+                    break;
+                }
+#endif
+#if AP_RANGEFINDER_VL53L4CX_ENABLED
+                if (_add_backend(AP_RangeFinder_VL53L4CX::detect(state[instance], params[instance],
+                                                                 hal.i2c_mgr->get_device(i, params[instance].address),
+                                                                 AP_RangeFinder_VL53L4CX::DistanceMode::Long),
                                  instance)) {
                     break;
                 }
